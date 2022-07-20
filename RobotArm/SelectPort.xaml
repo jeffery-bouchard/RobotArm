@@ -1,0 +1,23 @@
+﻿<Window x:Class="RobotArm.SelectPort"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotArm"
+        mc:Ignorable="d"
+        Title="Select Port" Height="130" Width="250" ResizeMode="CanMinimize">
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top">
+            <Label VerticalAlignment="Center" Content="Serial Port Name:" Width="100"></Label>
+            <ComboBox VerticalAlignment="Center" Name="boxPortName" Margin="5,5,5,5" Width="120"/>
+        </WrapPanel>
+        <WrapPanel DockPanel.Dock="Top">
+            <Button Name="btnSelectPort" Margin="5,5,5,5" Width="220" Content="Select Port" Click="SelectPress"></Button>
+        </WrapPanel>
+        <StatusBar Name="PortStatus" DockPanel.Dock="Bottom" Background="#FFD4D4D4" Margin="0,5,0,0">
+            <StatusBarItem BorderThickness="0,1" Background="White">
+                <TextBlock Name="txtPortStatus" Text=""></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+    </DockPanel>
+</Window>

@@ -1,0 +1,153 @@
+﻿<Window x:Class="RobotArm.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotArm"
+        mc:Ignorable="d"
+        Title="OAR" 
+        Height="465"
+        Width="800"
+        ResizeMode="CanMinimize" BorderThickness="0" Background="White"
+        KeyDown="KeyPress" Icon="Images/robot.ico">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" BorderThickness="0,1">
+            <MenuItem Header="_File" IsTabStop="False">
+                <MenuItem Header="New" Click="NewPress"/>
+                <MenuItem Header="Open" Click="OpenPress"/>
+                <MenuItem Header="Save" Click="SavePress"/>
+                <MenuItem Header="Close" Click="ClosePress"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="ExitPress"/>
+            </MenuItem>
+            <MenuItem Header="_Edit" IsTabStop="False">
+                <MenuItem Command="ApplicationCommands.Undo"/>
+                <MenuItem Command="ApplicationCommands.Redo"/>
+                <Separator/>
+                <MenuItem Command="ApplicationCommands.Cut"/>
+                <MenuItem Command="ApplicationCommands.Copy"/>
+                <MenuItem Command="ApplicationCommands.Paste"/>
+                <Separator/>
+                <MenuItem Command="ApplicationCommands.SelectAll"/>
+            </MenuItem>
+            <MenuItem Header="_Setup" IsTabStop="False">
+                <MenuItem Header="Connect..." Click="ConnectPress"/>
+                <MenuItem Header="Disconnect..." Click="DisconnectPress"/>
+            </MenuItem>
+            <MenuItem Header="_Help" IsTabStop="False">
+                <MenuItem Header="View Help" Click="HelpPress"/>
+                <Separator/>
+                <MenuItem Header="About OAR" Click="AboutPress"/>
+            </MenuItem>
+        </Menu>
+        <DockPanel DockPanel.Dock="Top">
+            <GroupBox Name="grpScript" Header="Automation" Margin="5,0,5,0" BorderBrush="#FFACACAC" DockPanel.Dock="Left">
+                <WrapPanel Name="pnlScriptCntl">
+                    <TextBox Name="txtScriptPath" Text="" Width="450" ToolTip="Script Location" IsTabStop="False"></TextBox>
+                    <Button Name="btnOpen" Width="50" ToolTip="Open Script" Click="OpenPress" IsTabStop="False">
+                        <Image Source="Images/OpenFile_16x.png" Width="16"></Image>
+                    </Button>
+                    <Button Name="btnRun" Width="50" Margin="10,0,5,0" ToolTip="Run Script" Click="RunPress" IsTabStop="False">
+                        <Image Source="Images/Run_16x.png" Width="16"></Image>
+                    </Button>
+                    <Button Name="btnStop" Width="50" Margin="5,0,5,0" ToolTip="Stop Script" Click="StopPress" IsTabStop="False">
+                        <Image Source="Images/Stop_16x.png" Width="16"></Image>
+                    </Button>
+                </WrapPanel>
+            </GroupBox>
+            <GroupBox Name="grpObjAvoid" Header="Safety" Margin="0,0,5,0" BorderBrush="#FFACACAC" DockPanel.Dock="Right">
+                <DockPanel Name="pnlObjAvoid">
+                    <Button Name="btnObjAvoid" Width="50" Margin="5,0,5,0" Click="ObjAvoidPress"
+                                  DockPanel.Dock="Left" ToolTip="Object Avoidance" IsTabStop="False" >
+                        <Image Name="btnObjAvoidImage" Source="Images/eye_open.png" Width="16"></Image>
+                    </Button>
+                    <TextBox Name="txtObjAvoid" Text="12" Width="30" Margin="0,0,0,0" DockPanel.Dock="Left" ToolTip="Proximity Limit" KeyDown="ObjAvoidTxtKeyDown" IsTabStop="False"/>
+                    <Image Name="imgObjAvoidLED" Source="Images/green_led.png" Width="16" DockPanel.Dock="Left" ToolTip="Object Detection" ></Image>
+                </DockPanel>
+            </GroupBox>
+        </DockPanel>
+        <StatusBar Name="barStatus" DockPanel.Dock="Bottom" Background="#FFD4D4D4">
+            <StatusBarItem BorderThickness="0,1" Background="White">
+                <TextBlock Name="txtStatus" Text="Disconnected"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+        <TabControl Margin="0,5,0,0">
+            <TabItem Name="tabOperator" Header="Operator" IsTabStop="False">
+                <WrapPanel  >
+                    <Image Name="imgDiagram" Source="Images/robot.png" Width="214" Height="300" Margin="15,10,0,10"></Image>
+                    <StackPanel>
+                        <WrapPanel Name="pnlGripper" Orientation="Horizontal" Margin="0,49,0,15" MouseEnter="GripperMouseEnter" MouseLeave="ActuatorMouseLeave">
+                            <Label Name="lblGripper" Content="Gripper:" Width="75" Margin="0,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                            <Button  Name="btnGripperDecr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="DecGripperPress" ToolTip="Decrement Gripper" IsTabStop="False">
+                                <Image Source="Images/left_gray_16x.png"></Image>
+                            </Button>
+                            <Slider Name="sldGripper" IsTabStop="False" Minimum="0" Maximum="31" Margin="5,5,5,5" ToolTip="Gripper Position"
+                                TickPlacement="BottomRight"  IsSnapToTickEnabled="True" TickFrequency="1"
+                                Height="25" VerticalAlignment="Top" SmallChange="0" LargeChange="0"
+                                HorizontalAlignment="Right" Width="325" Foreground="#FF707070" Thumb.DragCompleted="GripperDragCompleted"/>
+                            <Button Name="btnGripperIncr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="IncGripperPress" ToolTip="Increment Gripper" IsTabStop="False">
+                                <Image Source="Images/right_gray_16x.png"></Image>
+                            </Button>
+                            <TextBox Name="txtGripper" Height="25" Width="40" TextWrapping="Wrap" Text="0" Margin="5,5,5,5" VerticalAlignment="Top" HorizontalAlignment="Right" KeyDown="GripperTxtKeyDown" ToolTip="Gripper Position" IsTabStop="False"/>
+                        </WrapPanel>
+                        <WrapPanel Name="pnlElbow" Orientation="Horizontal" Margin="0,9,0,15" MouseEnter="ElbowMouseEnter" MouseLeave="ActuatorMouseLeave">
+                            <Label Name="lblElbow" Content="Elbow:" Width="75" Margin="0,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                            <Button Name="btnElbowDecr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="DecElbowPress" ToolTip="Decrement Elbow" IsTabStop="False">
+                                <Image Source="Images/left_gray_16x.png"></Image>
+                            </Button>
+                            <Slider Name="sldElbow" IsTabStop="False" Minimum="0" Maximum="31" Margin="5,5,5,5" ToolTip="Elbow Position"
+                                TickPlacement="BottomRight"  IsSnapToTickEnabled="True" TickFrequency="1"
+                                Height="25" VerticalAlignment="Top" SmallChange="0" LargeChange="0"
+                                HorizontalAlignment="Right" Width="325" Foreground="#FF707070" Thumb.DragCompleted="ElbowDragCompleted"/>
+                            <Button Name="btnElbowIncr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="IncElbowPress" ToolTip="Increment Elbow" IsTabStop="False">
+                                <Image Source="Images/right_gray_16x.png"></Image>
+                            </Button>
+                            <TextBox Name="txtElbow" Height="25" Width="40" TextWrapping="Wrap" Text="0" Margin="5,5,5,5" VerticalAlignment="Top" HorizontalAlignment="Right" KeyDown="ElbowTxtKeyDown" ToolTip="Elbow Position" IsTabStop="False"/>
+                        </WrapPanel>
+                        <WrapPanel Name="pnlShoulder" Orientation="Horizontal" Margin="0,14,0,15" MouseEnter="ShoulderMouseEnter" MouseLeave="ActuatorMouseLeave">
+                            <Label Name="lblShoulder" Content="Shoulder:" Width="75" Margin="0,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                            <Button Name="btnShoulderDecr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="DecShoulderPress" ToolTip="Decrement Shoulder" IsTabStop="False">
+                                <Image Source="Images/left_gray_16x.png"></Image>
+                            </Button>
+                            <Slider Name="sldShoulder" IsTabStop="False" Minimum="0" Maximum="31" Margin="5,5,5,5" ToolTip="Shoulder Position"
+                                TickPlacement="BottomRight"  IsSnapToTickEnabled="True" TickFrequency="1"
+                                Height="25" VerticalAlignment="Top" SmallChange="0" LargeChange="0"
+                                HorizontalAlignment="Right" Width="325" Foreground="#FF707070" Thumb.DragCompleted="ShoulderDragCompleted"/>
+                            <Button Name="btnShoulderIncr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="IncShoulderPress" ToolTip="Increment Shoulder" IsTabStop="False">
+                                <Image Source="Images/right_gray_16x.png"></Image>
+                            </Button>
+                            <TextBox Name="txtShoulder" Height="25" Width="40" TextWrapping="Wrap" Text="0" Margin="5,5,5,5" VerticalAlignment="Top" HorizontalAlignment="Right" KeyDown="ShoulderTxtKeyDown" ToolTip="Shoulder Position" IsTabStop="False"/>
+                        </WrapPanel>
+                        <WrapPanel Name="pnlBase" Orientation="Horizontal" Margin="0,9,0,15" MouseEnter="BaseMouseEnter" MouseLeave="ActuatorMouseLeave">
+                            <Label Name="lblBase" Content="Base:" Width="75" Margin="0,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                            <Button Name="btnBaseDecr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="DecBasePress" ToolTip="Decrement Base" IsTabStop="False">
+                                <Image Source="Images/left_gray_16x.png"></Image>
+                            </Button>
+                            <Slider Name="sldBase" IsTabStop="False" Minimum="0" Maximum="31" Margin="5,5,5,5" ToolTip="Base Position"
+                                TickPlacement="BottomRight"  IsSnapToTickEnabled="True" TickFrequency="1"
+                                Height="25" VerticalAlignment="Top" SmallChange="0" LargeChange="0"
+                                HorizontalAlignment="Right" Width="325" Foreground="#FF707070" Thumb.DragCompleted="BaseDragCompleted"/>
+                            <Button Name="btnBaseIncr" Width="30" Margin="5,5,5,5" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Click="IncBasePress" ToolTip="Increment Base" IsTabStop="False">
+                                <Image Source="Images/right_gray_16x.png"></Image>
+                            </Button>
+                            <TextBox Name="txtBase" Height="25" Width="40" TextWrapping="Wrap" Text="0" Margin="5,5,5,5" VerticalAlignment="Top" HorizontalAlignment="Right" KeyDown="BaseTxtKeyDown" ToolTip="Base Position" IsTabStop="False"/>
+                        </WrapPanel>
+                        <DockPanel>
+                            <Button Name="btnHome"  Width="407" Height="15" Margin="30,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Send Home" Click="HomePress" FontSize="8" FontWeight="Bold" IsTabStop="False">
+                                Home
+                            </Button>
+                        </DockPanel>
+                    </StackPanel>
+                </WrapPanel>
+            </TabItem>
+            <TabItem Name="tabProgrammer" Header="Programmer" IsTabStop="False">
+                <RichTextBox Name="txtScript" VerticalScrollBarVisibility="Visible" ToolTip="Script Editor" IsTabStop="False" Block.LineHeight="6">
+                    <FlowDocument>
+                        <Paragraph>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
